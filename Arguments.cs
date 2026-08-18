@@ -16,9 +16,7 @@
         public int RPM { get; set; }
         public int CylinderCount { get; set; } = 1;
 
-        /// <summary>
-        /// Creates a copy of the current Arguments object
-        /// </summary>
+        // Creates a copy of the current Arguments object
         public Arguments Clone()
         {
             return new Arguments
@@ -39,9 +37,7 @@
             };
         }
 
-        /// <summary>
-        /// Returns a string representation of the engine configuration
-        /// </summary>
+        // Returns a string of the engine configuration
         public override string ToString()
         {
             string units = IsMetric ? "mm" : "in";

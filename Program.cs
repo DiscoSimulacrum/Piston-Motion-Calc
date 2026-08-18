@@ -14,6 +14,8 @@ namespace PistonMotion
         {
             DisplayTitle();
 
+            bool isCommandLineMode = args.Length > 0;
+
             while (true)
             {
                 try
@@ -23,6 +25,12 @@ namespace PistonMotion
                     if (!ValidateInputs(arguments))
                     {
                         Console.WriteLine("Invalid input values detected. Please check your inputs and try again.");
+
+                        if (isCommandLineMode)
+                        {
+                            Environment.Exit(1);
+                        }
+
                         continue;
                     }
 
@@ -32,6 +40,11 @@ namespace PistonMotion
                     DisplayResults(arguments, results);
                     SaveResults(arguments.FileLocation, arguments.Filename, csvResults);
 
+                    if (isCommandLineMode)
+                    {
+                        return;
+                    }
+
                     Console.WriteLine("\n\nPress any key to continue or Ctrl+C to exit...");
                     Console.ReadKey();
                     Console.Clear();
@@ -39,11 +52,21 @@ namespace PistonMotion
                 catch (FormatException)
                 {
                     Console.WriteLine("Invalid number format. Please enter valid numeric values.");
+
+                    if (isCommandLineMode)
+                    {
+                        Environment.Exit(1);
+                    }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"An error occurred: {ex.Message}");
                     Console.WriteLine("Please try again.");
+
+                    if (isCommandLineMode)
+                    {
+                        Environment.Exit(1);
+                    }
                 }
             }
         }
