@@ -1,4 +1,4 @@
-﻿namespace PistonMotion
+namespace PistonMotion.Core
 {
     public class PistonResult
     {

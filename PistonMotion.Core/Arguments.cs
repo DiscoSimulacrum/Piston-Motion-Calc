@@ -1,4 +1,4 @@
-﻿namespace PistonMotion
+namespace PistonMotion.Core
 {
     public class Arguments
     {
@@ -16,7 +16,9 @@
         public int RPM { get; set; }
         public int CylinderCount { get; set; } = 1;
 
-        // Creates a copy of the current Arguments object
+        /// <summary>
+        /// Creates a copy of the current Arguments object
+        /// </summary>
         public Arguments Clone()
         {
             return new Arguments
@@ -37,7 +39,9 @@
             };
         }
 
-        // Returns a string of the engine configuration
+        /// <summary>
+        /// Returns a string representation of the engine configuration
+        /// </summary>
         public override string ToString()
         {
             string units = IsMetric ? "mm" : "in";

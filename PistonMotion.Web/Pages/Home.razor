@@ -1,0 +1,114 @@
+@page "/"
+
+<PageTitle>Piston Motion Calc</PageTitle>
+
+<h1>Piston Motion Calc</h1>
+
+<EditForm Model="@arguments" OnValidSubmit="@Calculate">
+    <div class="field">
+        <label>
+            <input type="checkbox" @bind="arguments.IsMetric" />
+            Use metric units (mm / cc)
+        </label>
+    </div>
+
+    <div class="field">
+        <label>Bore (@Units)</label>
+        <input type="number" step="any" @bind="arguments.Bore" />
+    </div>
+    <div class="field">
+        <label>Stroke (@Units)</label>
+        <input type="number" step="any" @bind="arguments.Stroke" />
+    </div>
+    <div class="field">
+        <label>Rod Length (@Units)</label>
+        <input type="number" step="any" @bind="arguments.RodLength" />
+    </div>
+    <div class="field">
+        <label>Block Deck Height (@Units)</label>
+        <input type="number" step="any" @bind="arguments.DeckHeight" />
+    </div>
+    <div class="field">
+        <label>Piston Compression Height (@Units)</label>
+        <input type="number" step="any" @bind="arguments.CompHeight" />
+    </div>
+    <div class="field">
+        <label>Piston Dome Volume (@VolumeUnits, negative for dish)</label>
+        <input type="number" step="any" @bind="arguments.PistonVolume" />
+    </div>
+    <div class="field">
+        <label>Combustion Chamber Volume (@VolumeUnits)</label>
+        <input type="number" step="any" @bind="arguments.ChamberVolume" />
+    </div>
+    <div class="field">
+        <label>Head Gasket Compressed Thickness (@Units)</label>
+        <input type="number" step="any" @bind="arguments.GasketHeight" />
+    </div>
+    <div class="field">
+        <label>Max RPM</label>
+        <input type="number" step="any" @bind="arguments.RPM" />
+    </div>
+    <div class="field">
+        <label>Cylinder Count</label>
+        <input type="number" step="any" @bind="arguments.CylinderCount" />
+    </div>
+
+    <button type="submit">Calculate</button>
+</EditForm>
+
+@if (validationErrors.Count > 0)
+{
+    <div class="validation-errors">
+        <p>Validation errors:</p>
+        <ul>
+            @foreach (var error in validationErrors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+
+@if (results is not null)
+{
+    <div class="results">
+        <h2>Results</h2>
+        <p>Total swept displacement: @DisplayDisplacement.ToString("F2") @VolumeUnits</p>
+        <p>Bore to Stroke Ratio: @results.BoreRatio.ToString("F3")</p>
+        <p>Rod Ratio: @results.RodRatio.ToString("F3")</p>
+        <p>Piston to deck (including gasket): @results.Piston2deck.ToString("F3") @Units (negative = out of the hole)</p>
+        <p>Static Compression Ratio: @results.CompressionRatio.ToString("F2"):1</p>
+        <p>Peak piston velocity: @results.MaxVelocity.ToString("F2") @VelocityUnits at @results.MaxVelocityDeg&deg;</p>
+        <p>@pistonResults.Count angle samples held in memory (0&deg;-180&deg;), ready for charting.</p>
+    </div>
+}
+
+@code {
+    private Arguments arguments = new();
+    private Results? results;
+    private List<PistonResult> pistonResults = new();
+    private List<string> validationErrors = new();
+
+    private string Units => arguments.IsMetric ? "mm" : "inches";
+    private string VolumeUnits => arguments.IsMetric ? "cc" : "cubic inches";
+    private string VelocityUnits => arguments.IsMetric ? "mm/s" : "inches/s";
+
+    private double DisplayDisplacement =>
+        results is null ? 0 : (arguments.IsMetric ? results.Displacement / 1000 : results.Displacement);
+
+    private void Calculate()
+    {
+        validationErrors = PistonCalculator.ValidateInputs(arguments);
+
+        if (validationErrors.Count > 0)
+        {
+            results = null;
+            pistonResults = new List<PistonResult>();
+            return;
+        }
+
+        var newResults = new Results();
+        pistonResults = PistonCalculator.Calculate(arguments, newResults);
+        results = newResults;
+    }
+}
