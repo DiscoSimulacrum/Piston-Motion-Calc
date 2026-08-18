@@ -1,4 +1,4 @@
-Piston Motion Calc v0.3
+Piston Motion Calc v0.4
 
 This script calculates the velocity of an reciprocating engine's piston(s) during it's cycle.
 It also calculates various other results, such as compression ratio. The goal is to keep elaborating on the code to create a useful kinematic model.
