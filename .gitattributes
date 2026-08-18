@@ -1,2 +1,14 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Blazor WebAssembly build output must be byte-for-byte identical to what
+# `dotnet publish` produced, since index.html embeds SRI (integrity) hashes
+# for these files. Any line-ending normalization breaks the hash and blocks
+# loading.
+*.js -text
+*.wasm -text
+*.dll -text
+*.dat -text
+*.blat -text
+*.br -text
+*.gz -text
